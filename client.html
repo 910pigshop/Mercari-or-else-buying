@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>代購商品進度查詢</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
+
+  <!-- 頂部導航 -->
+  <header class="bg-slate-900 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+      <h1 class="text-xl font-bold text-amber-400">📦 代購集運 - 進度查詢</h1>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
+    
+    <!-- 查詢輸入框 -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center max-w-lg mx-auto">
+      <h2 class="text-2xl font-bold mb-2">委託商品貨態查詢</h2>
+      <p class="text-slate-500 text-sm mb-6">請輸入您專屬的客戶流水號（例：CUST-601717）</p>
+      
+      <div class="flex gap-2">
+        <input type="text" id="search-code" placeholder="請輸入流水號" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 uppercase">
+        <button onclick="queryClientOrders()" class="bg-amber-500 hover:bg-amber-600 text-white font-medium px-6 py-2 rounded-lg transition">查詢</button>
+      </div>
+    </div>
+
+    <!-- 查詢結果展示 -->
+    <div id="client-results" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 max-w-3xl mx-auto">
+      <div class="border-b pb-4 mb-4 flex justify-between items-center">
+        <div>
+          <span class="text-xs text-slate-400 font-semibold uppercase">Customer</span>
+          <h3 id="res-customer-name" class="text-xl font-bold text-slate-800">--</h3>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-slate-400 font-semibold uppercase">Serial No.</span>
+          <p id="res-customer-code" class="text-sm font-mono text-amber-600 font-bold">--</p>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 text-slate-500 text-xs border-b">
+              <th class="p-3">商品名稱</th>
+              <th class="p-3">購買台幣金額</th>
+              <th class="p-3">當前貨態</th>
+              <th class="p-3">更新日期</th>
+            </tr>
+          </thead>
+          <tbody id="client-order-list" class="divide-y text-sm">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBprY_kKxxx7pPC_7yeyoJw8yacMnpVwMs",
+      authDomain: "pigshop.firebaseapp.com",
+      projectId: "pigshop",
+      storageBucket: "pigshop.firebasestorage.app",
+      messagingSenderId: "77868439383",
+      appId: "1:77868439383:web:f4ab73260824ea8fc99012",
+      measurementId: "G-BLW4Z75XZV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.queryClientOrders = async function() {
+      const code = document.getElementById('search-code').value.trim().toUpperCase();
+      if(!code) {
+        alert('請輸入流水號');
+        return;
+      }
+
+      try {
+        const q = query(collection(db, "buy_agent_orders"), where("customerCode", "==", code));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          alert('查無此流水號資料，請確認輸入是否正確。');
+          document.getElementById('client-results').classList.add('hidden');
+          return;
+        }
+
+        let userOrders = [];
+        querySnapshot.forEach((docSnap) => {
+          userOrders.push(docSnap.data());
+        });
+
+        document.getElementById('res-customer-name').innerText = userOrders[0].name || '--';
+        document.getElementById('res-customer-code').innerText = code;
+
+        const tbody = document.getElementById('client-order-list');
+        tbody.innerHTML = userOrders.map(o => `
+          <tr>
+            <td class="p-3 font-medium">${o.item || '--'}</td>
+            <td class="p-3 font-mono">NT$ ${(o.twd || 0).toLocaleString()}</td>
+            <td class="p-3"><span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-md text-xs font-semibold">${o.status || '採購中'}</span></td>
+            <td class="p-3 text-slate-400 text-xs">${o.date || '--'}</td>
+          </tr>
+        `).join('');
+
+        document.getElementById('client-results').classList.remove('hidden');
+      } catch (err) {
+        console.error("查詢失敗：", err);
+        alert("查詢出錯：" + err.message);
+      }
+    };
+  </script>
+</body>
+</html>

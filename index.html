@@ -21,10 +21,10 @@
     <!-- 查詢輸入框 -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center max-w-lg mx-auto">
       <h2 class="text-2xl font-bold mb-2">委託商品貨態查詢</h2>
-      <p class="text-slate-500 text-sm mb-6">請輸入您專屬的客戶流水號（例：CUST-601717）</p>
+      <p class="text-slate-500 text-sm mb-6">請輸入您的客戶編號（例：CUST-601717）</p>
       
       <div class="flex gap-2">
-        <input type="text" id="search-code" placeholder="請輸入流水號" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 uppercase">
+        <input type="text" id="search-code" placeholder="請輸入客戶編號" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 uppercase">
         <button onclick="queryClientOrders()" class="bg-amber-500 hover:bg-amber-600 text-white font-medium px-6 py-2 rounded-lg transition">查詢</button>
       </div>
     </div>
@@ -89,7 +89,7 @@
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-          alert('查無此流水號資料，請確認輸入是否正確。');
+          alert('查無此客戶編號，請確認輸入是否正確。');
           document.getElementById('client-results').classList.add('hidden');
           return;
         }

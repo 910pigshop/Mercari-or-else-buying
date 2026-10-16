@@ -1,3 +1,20 @@
+我已經為你把 **LINE 官方帳號連結按鈕** 整合進前台（`client.html`）中！
+
+### 💡 加入的位置與亮點：
+
+1. **頂部導航列 (Header)：** 右上角隨時顯示綠色鮮明的「💬 官方 LINE 客服」按鈕。
+2. **查詢框下方（未輸入流水號時）：** 醒目的聯繫按鈕，提示客人「有問題或找不到流水號？點此聯繫客服」。
+3. **查詢結果下方（輸入流水號後）：** 查詢結果卡片底部附帶「對訂單有疑問？點此加入官方 LINE 詢問」，方便客人直接點擊切換。
+
+網址已設定為你提供的連結：`[https://lin.ee/YAcEFex](https://lin.ee/YAcEFex)`（點擊會在新頁面開啟）。
+
+---
+
+### 前台完整程式碼 (`client.html`)
+
+請複製以下程式碼覆蓋原本的前台 `client.html` 檔案（或 `index.html`）：
+
+```html
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -13,31 +30,43 @@
   <header class="bg-slate-900 text-white shadow-md">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <h1 class="text-xl font-bold text-amber-400">📦 代購集運 - 進度查詢</h1>
+      <!-- 頂部 LINE 客服按鈕 -->
+      <a href="https://lin.ee/YAcEFex" target="_blank" rel="noopener noreferrer" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs md:text-sm font-bold px-3 py-1.5 rounded-full transition flex items-center gap-1 shadow">
+        💬 官方 LINE 客服
+      </a>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
     
-    <!-- 查詢輸入框 -->
+    <!-- 查詢輸入框卡片 -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center max-w-lg mx-auto">
       <h2 class="text-2xl font-bold mb-2">委託商品貨態查詢</h2>
-      <p class="text-slate-500 text-sm mb-6">請輸入您的客戶編號（例：CUST-601717）</p>
+      <p class="text-slate-500 text-sm mb-6">請輸入您專屬的客戶編號（例：PS839ab12）</p>
       
-      <div class="flex gap-2">
-        <input type="text" id="search-code" placeholder="請輸入客戶編號" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 uppercase">
+      <div class="flex gap-2 mb-4">
+        <input type="text" id="search-code" placeholder="請輸入客戶編號" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono font-bold">
         <button onclick="queryClientOrders()" class="bg-amber-500 hover:bg-amber-600 text-white font-medium px-6 py-2 rounded-lg transition">查詢</button>
+      </div>
+
+      <!-- 未查詢時的 LINE 提示區 -->
+      <div class="pt-3 border-t border-slate-100 text-xs text-slate-400 flex justify-between items-center">
+        <span>找不到客戶編號或有代購需求？</span>
+        <a href="https://lin.ee/YAcEFex" target="_blank" rel="noopener noreferrer" class="text-emerald-600 font-bold hover:underline flex items-center gap-0.5">
+          👉 聯繫官方 LINE 客服
+        </a>
       </div>
     </div>
 
-    <!-- 查詢結果展示 -->
-    <div id="client-results" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 max-w-3xl mx-auto">
-      <div class="border-b pb-4 mb-4 flex justify-between items-center">
+    <!-- 查詢結果展示區塊 -->
+    <div id="client-results" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 max-w-3xl mx-auto space-y-4">
+      <div class="border-b pb-4 flex justify-between items-center">
         <div>
           <span class="text-xs text-slate-400 font-semibold uppercase">Customer</span>
           <h3 id="res-customer-name" class="text-xl font-bold text-slate-800">--</h3>
         </div>
         <div class="text-right">
-          <span class="text-xs text-slate-400 font-semibold uppercase">Serial No.</span>
+          <span class="text-xs text-slate-400 font-semibold uppercase">Customer Code</span>
           <p id="res-customer-code" class="text-sm font-mono text-amber-600 font-bold">--</p>
         </div>
       </div>
@@ -49,12 +78,23 @@
               <th class="p-3">商品名稱</th>
               <th class="p-3">購買台幣金額</th>
               <th class="p-3">當前貨態</th>
-              <th class="p-3">更新日期</th>
+              <th class="p-3">最後更新日期</th>
             </tr>
           </thead>
           <tbody id="client-order-list" class="divide-y text-sm">
           </tbody>
         </table>
+      </div>
+
+      <!-- 輸入完查詢結果後的 LINE 聯繫引導卡片 -->
+      <div class="mt-6 bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex flex-wrap justify-between items-center gap-3">
+        <div class="text-xs text-emerald-800">
+          <p class="font-bold text-sm mb-0.5">💡 對貨態或商品有疑問？</p>
+          <p>如需補件、變更地址或有其他代購問題，歡迎直接點擊聯繫我們的客服。</p>
+        </div>
+        <a href="https://lin.ee/YAcEFex" target="_blank" rel="noopener noreferrer" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm shrink-0">
+          💬 加入 LINE 官方帳號詢問
+        </a>
       </div>
     </div>
 
@@ -78,9 +118,9 @@
     const db = getFirestore(app);
 
     window.queryClientOrders = async function() {
-      const code = document.getElementById('search-code').value.trim().toUpperCase();
+      const code = document.getElementById('search-code').value.trim();
       if(!code) {
-        alert('請輸入流水號');
+        alert('請輸入客戶編號');
         return;
       }
 
@@ -89,7 +129,7 @@
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-          alert('查無此客戶編號，請確認輸入是否正確。');
+          alert('查無此客戶編號資料，請確認輸入是否正確。');
           document.getElementById('client-results').classList.add('hidden');
           return;
         }
@@ -121,3 +161,5 @@
   </script>
 </body>
 </html>
+
+```
